@@ -100,7 +100,7 @@ export default function AIAutomationSection() {
   }, [isPlaying]);
 
   return (
-    <section id="automation" className="py-20 lg:py-28 relative z-10 border-t border-white/[0.04] bg-[#06080d]/80">
+    <section id="automation" className="py-20 lg:py-28 relative z-10 border-t border-white/[0.04] bg-[#06080d]/80 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

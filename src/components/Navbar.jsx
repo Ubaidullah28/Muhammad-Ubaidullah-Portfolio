@@ -23,7 +23,7 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Simple active section detection
+      // Active section detection
       const sections = navItems.map(item => item.href.substring(1));
       const scrollPosition = window.scrollY + 200;
 
@@ -40,6 +40,28 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNavClick = (e, href) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+
+    const targetId = href.substring(1);
+    const element = document.getElementById(targetId);
+
+    if (element) {
+      const navOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
+
+      window.scrollTo({
+        top: targetId === 'home' ? 0 : offsetPosition,
+        behavior: 'smooth'
+      });
+
+      window.history.pushState(null, '', href);
+      setActiveSection(targetId);
+    }
+  };
+
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -53,6 +75,7 @@ export default function Navbar() {
           {/* Brand / Logo */}
           <a 
             href="#home" 
+            onClick={(e) => handleNavClick(e, '#home')}
             className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded-lg p-1"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center group-hover:border-cyan-400 transition-colors shadow-inner shadow-cyan-500/20">
@@ -77,6 +100,7 @@ export default function Navbar() {
                 <a
                   key={item.name}
                   href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   className={`relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
                     isActive 
                       ? 'text-white' 
@@ -113,7 +137,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 border border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 border border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -137,11 +161,11 @@ export default function Navbar() {
               {navItems.map((item) => {
                 const isActive = activeSection === item.href.substring(1);
                 return (
-                  <a
+                  <button
                     key={item.name}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
+                    type="button"
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-between cursor-pointer ${
                       isActive 
                         ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30' 
                         : 'text-slate-300 hover:bg-white/[0.05] hover:text-white'
@@ -149,7 +173,7 @@ export default function Navbar() {
                   >
                     <span>{item.name}</span>
                     {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400" />}
-                  </a>
+                  </button>
                 );
               })}
 
@@ -173,4 +197,3 @@ export default function Navbar() {
     </header>
   );
 }
-

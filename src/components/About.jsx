@@ -35,7 +35,7 @@ const iconMap = {
 
 export default function About() {
   return (
-    <section id="about" className="py-20 lg:py-28 relative z-10 border-t border-white/[0.04]">
+    <section id="about" className="py-20 lg:py-28 relative z-10 border-t border-white/[0.04] scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
