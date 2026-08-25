@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ubaidullah28.github.io/sitemap.xml
+
