@@ -41,32 +41,43 @@ export default function Navbar() {
   }, []);
 
   const handleNavClick = (e, href) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Close the mobile menu drawer
     setMobileMenuOpen(false);
 
     const targetId = href.substring(1);
-    const element = document.getElementById(targetId);
 
-    if (element) {
-      const navOffset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navOffset;
-
-      window.scrollTo({
-        top: targetId === 'home' ? 0 : offsetPosition,
-        behavior: 'smooth'
-      });
+    // Timeout allows touch events and menu collapse animation to yield without blocking scroll gestures on mobile
+    setTimeout(() => {
+      if (targetId === 'home') {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }
 
       window.history.pushState(null, '', href);
       setActiveSection(targetId);
-    }
+    }, 120);
   };
 
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled 
-          ? 'bg-[#06080d]/85 backdrop-blur-md border-b border-white/[0.08] shadow-lg shadow-black/40 py-3.5' 
+          ? 'bg-[#06080d]/90 backdrop-blur-md border-b border-white/[0.08] shadow-lg shadow-black/40 py-3.5' 
           : 'bg-transparent py-5'
       }`}
     >
@@ -76,7 +87,7 @@ export default function Navbar() {
           <a 
             href="#home" 
             onClick={(e) => handleNavClick(e, '#home')}
-            className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded-lg p-1"
+            className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-cyan-400 rounded-lg p-1 cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center group-hover:border-cyan-400 transition-colors shadow-inner shadow-cyan-500/20">
               <span className="text-cyan-400 font-mono font-bold text-base tracking-tighter">MU</span>
@@ -101,7 +112,7 @@ export default function Navbar() {
                   key={item.name}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.href)}
-                  className={`relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
+                  className={`relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 cursor-pointer ${
                     isActive 
                       ? 'text-white' 
                       : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
@@ -137,11 +148,12 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 border border-white/[0.08] focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer"
+              className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white bg-slate-900/80 border border-white/[0.1] focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer active:scale-95 transition-transform"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
+              style={{ touchAction: 'manipulation' }}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -154,10 +166,10 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className="lg:hidden bg-[#0a0e17]/95 backdrop-blur-xl border-b border-white/[0.1] px-4 pt-3 pb-6 overflow-hidden shadow-2xl"
+            transition={{ duration: 0.22, ease: 'easeInOut' }}
+            className="lg:hidden bg-[#070b14]/98 backdrop-blur-2xl border-b border-white/[0.12] px-4 pt-3 pb-6 overflow-hidden shadow-2xl"
           >
-            <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1.5">
               {navItems.map((item) => {
                 const isActive = activeSection === item.href.substring(1);
                 return (
@@ -165,14 +177,19 @@ export default function Navbar() {
                     key={item.name}
                     type="button"
                     onClick={(e) => handleNavClick(e, item.href)}
-                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-between cursor-pointer ${
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all flex items-center justify-between cursor-pointer active:scale-[0.98] ${
                       isActive 
-                        ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30' 
-                        : 'text-slate-300 hover:bg-white/[0.05] hover:text-white'
+                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/10' 
+                        : 'text-slate-300 hover:bg-white/[0.05] hover:text-white active:bg-white/[0.08]'
                     }`}
+                    style={{ touchAction: 'manipulation' }}
                   >
-                    <span>{item.name}</span>
-                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400" />}
+                    <span className="font-mono text-xs uppercase tracking-wider">{item.name}</span>
+                    {isActive ? (
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400 animate-pulse" />
+                    ) : (
+                      <span className="text-slate-600 font-mono text-[10px]">→</span>
+                    )}
                   </button>
                 );
               })}
@@ -183,7 +200,7 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-500/40 hover:bg-cyan-900/60 shadow-lg shadow-cyan-500/10"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 hover:bg-cyan-900/60 shadow-lg shadow-cyan-500/10 active:scale-[0.98]"
                 >
                   <FileText className="w-4 h-4" />
                   <span>View Official Resume</span>

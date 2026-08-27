@@ -5,11 +5,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+    -webkit-text-size-adjust: 100%;
   }
   
   body {
     background-color: #06080d;
     color: #f1f5f9;
+    min-height: 100vh;
   }
 
   /* Custom scrollbar */
@@ -99,4 +102,3 @@
     scroll-behavior: auto !important;
   }
 }
-

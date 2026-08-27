@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import LoadingScreen from './components/LoadingScreen';
 import BackgroundEffect from './components/BackgroundEffect';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -13,30 +15,46 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
-    <div className="relative min-h-screen bg-[#06080d] text-slate-100 selection:bg-cyan-500/25 selection:text-cyan-200 antialiased overflow-x-hidden">
-      {/* Background ambient lighting and grid */}
-      <BackgroundEffect />
+    <div className="relative min-h-screen bg-[#06080d] text-slate-100 selection:bg-cyan-500/25 selection:text-cyan-200 antialiased">
+      {/* Programmer / Developer Initial Boot Loading Screen */}
+      <AnimatePresence mode="wait">
+        {isLoading && (
+          <LoadingScreen onComplete={() => setIsLoading(false)} />
+        )}
+      </AnimatePresence>
 
-      {/* Sticky Header */}
-      <Navbar />
+      {/* Main Portfolio Application */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoading ? 0 : 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative overflow-x-clip"
+      >
+        {/* Background ambient lighting and grid */}
+        <BackgroundEffect />
 
-      {/* Main Sections */}
-      <main className="relative z-10">
-        <Hero />
-        <About />
-        <EngineeringApproach />
-        <Experience />
-        <FeaturedProjects />
-        <AIAutomationSection />
-        <Skills />
-        <Education />
-        <Contact />
-      </main>
+        {/* Sticky Header */}
+        <Navbar />
 
-      {/* Footer */}
-      <Footer />
+        {/* Main Sections */}
+        <main className="relative z-10">
+          <Hero />
+          <About />
+          <EngineeringApproach />
+          <Experience />
+          <FeaturedProjects />
+          <AIAutomationSection />
+          <Skills />
+          <Education />
+          <Contact />
+        </main>
+
+        {/* Footer */}
+        <Footer />
+      </motion.div>
     </div>
   );
 }
-
